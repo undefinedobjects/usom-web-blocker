@@ -1,38 +1,41 @@
 (function() {
-	class Usom {
-		#usomInfo = {
+	class USOM {
+		#USOMInfo = {
 			URLList: 'https://www.usom.gov.tr/url-list.txt',
 		}
 	
 		getUSOMList() {
-			return fetch(this.#usomInfo.URLList)
+			return fetch(this.#USOMInfo.URLList)
 			.then(list => list.text())
 			.then(list => list.split('\n'))
 			.catch(err => console.log('Failed to getList'));
 		}
 	}
 	
-	const isIpAddress = (ipAddress) => /^((\d){1,3}\.){3}(\d){1,3}$/.test(ipAddress)
+	const isIpAddress = (ipAddress) => /^((\d){1,3}\.){3}(\d){1,3}$/.test(ipAddress);
 
-
-	let usomURLList;
-	chrome.runtime.onInstalled.addListener( () => {
+	let USOMURLList;
+	chrome.runtime.onInstalled.addListener(() => {
 		if (navigator.onLine) {
-			usomURLList = new Usom().getUSOMList().then(list => list);
+			USOMURLList = new USOM().getUSOMList();
 		}
 	});
 
 	chrome.tabs.onUpdated.addListener(function(tabid, info, tab) {
 		if(info?.url) {
-			let url = new URL(info.url);
-
+			let url = new URL(info.url).hostname;
+	
 			if(!isIpAddress(url)) {
-				url = url.hostname.split('.');
-				url.shift();
+				url = url.split('.');
+
+				if(url.length > 2) {
+					url.shift();
+				}
+				
 				url = url.join('.');
 			}
 
-			usomURLList.then(list => {
+			USOMURLList.then(list => {
 				if(!list.includes(url)) {
 					return;
 				}
