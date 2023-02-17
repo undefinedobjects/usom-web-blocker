@@ -15,9 +15,7 @@
   },
   "permissions": [
     "webRequest",
-    "declarativeNetRequest",
-    "unlimitedStorage",
-    "storage"
+    "declarativeNetRequest"
   ],
   "host_permissions": [
     "*://*/"
